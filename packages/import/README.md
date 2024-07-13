@@ -1,9 +1,3 @@
-> **Note**
-> Linear now has a migration assistant for importing from Asana, Jira, Shortcut, and GitHub without using the CLI.
->
-> Please see [the documentation](https://linear.app/docs/import-issues) for more information.
-> If you would like to import data from other services not listed above this CLI may still be useful.
-
 # linear-import
 
 Install the CLI:
@@ -15,7 +9,7 @@ yarn global add @linear/import
 or
 
 ```
-npm i --location=global @linear/import
+npm i -g @linear/import
 ```
 
 Run interactive importer:
@@ -39,9 +33,27 @@ Supported fields:
 - Labels
 - (Optional) Comments
 
+### GitLab for Personal
+
+Open GitLab issues can be imported with your personal access token from GitLab's API.
+
+Supported fields:
+
+- `title` - Issue Title
+- `description` - Issue Description
+- `url` - Issue URL
+- `labels` - Issue Labels
+- `assignees` - Issue Assignees
+- `createdAt` - Issue Creation Date
+- `dueDate` - Issue Due Date
+- `priority` - Issue Priority
+- `status` - Issue Status
+
 ### Jira CSV
 
-This method is deprecated. We recommend importing Jira projects through the [in-product importer](https://linear.app/docs/import-issues#jira) instead of the CLI, which also offers a CSV import option but imports more fields. If you proceed, the following fields are supported:
+Jira project can be imported into a Linear team from the CSV export file.
+
+Following fields are supported:
 
 - `Summary` - Issue title
 - `Description` - Converted into markdown and used as issue description
@@ -76,21 +88,21 @@ Following fields are supported:
 - `URL` - URL of Pivotal Tracker story
 - `Created at` - Preserves the story creation date
 
-### Shortcut CSV
+### Clubhouse CSV
 
-Shortcut workspaces can be imported into a Linear team from the CSV export file. It only imports `chores`, `features`, and `bugs`.
+Clubhouse workspaces can be imported into a Linear team from the CSV export file. It only imports `chores`, `features`, and `bugs`.
 
 Following fields are supported:
 
 - `Name` - Issue title
-- `Description` - Shortcut markdown formatted description
+- `Description` - Clubhouse markdown formatted description
 - `Tasks` - Appended to the description
 - `External Tickets` - Appended to the description
 - `State` - Mapped to the most similar Linear status
 - `Type` - Added as a label
 - `Tags` - Added as labels
 - `Owners` - Story owner (only the first is preserved)
-- `URL` - URL of Shortcut story, also appended to the description
+- `URL` - URL of Clubhouse story, also appended to the description
 - `Created at` - Preserves the story creation date
 
 ### Trello JSON
@@ -116,7 +128,7 @@ Following fields are supported:
 - `Description` - Issue description
 - `Priority` - Issue priority
 - `Status` - Issue state (workflow)
-- `Assignee` - Issue assignee (user's full name)
+- `Assignee` - Issue assignee
 - `Labels` - Added as a label
 ## Todo
 

@@ -4,7 +4,7 @@ import chalk from "chalk";
 import * as inquirer from "inquirer";
 import { importIssues } from "./importIssues";
 import { asanaCsvImport } from "./importers/asanaCsv";
-import { githubImport } from "./importers/github";
+import { githubImport, gitlabImport } from "./importers";
 import { jiraCsvImport } from "./importers/jiraCsv";
 import { linearCsvImporter } from "./importers/linearCsv";
 import { pivotalCsvImport } from "./importers/pivotalCsv";
@@ -30,6 +30,10 @@ inquirer.registerPrompt("filePath", require("inquirer-file-path"));
           {
             name: "GitHub",
             value: "github",
+          },
+          {
+            name: "GitLab",
+            value: "gitlab",
           },
           {
             name: "Jira (CSV export)",
@@ -64,6 +68,9 @@ inquirer.registerPrompt("filePath", require("inquirer-file-path"));
     switch (importAnswers.service) {
       case "github":
         importer = await githubImport();
+        break;
+      case "gitlab":
+        importer = await gitlabImport();
         break;
       case "jiraCsv":
         importer = await jiraCsvImport();
