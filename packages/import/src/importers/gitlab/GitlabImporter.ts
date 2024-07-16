@@ -1,7 +1,14 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Importer, ImportResult } from "../../types";
-import { getGitlabIssuesFromRepo, getGitlabProjectId, mapStatusFromLabels } from "./client";
+import {
+  getGitlabIssuesFromRepo,
+  getGitlabProjectId,
+  mapStatusFromLabels,
+  mapPriority,
+  mapLabels,
+  mapGitlabIdToEmail
+} from "./client";
 
 export interface GITLAB_ISSUE {
   id: number;
@@ -17,8 +24,6 @@ export interface GITLAB_ISSUE {
   state: string;
   comments: any[];
 }
-
-type LinearPriority = "No priority" | "Urgent" | "High" | "Medium" | "Low";
 
 export interface Author {
   state: string;
@@ -125,12 +130,13 @@ export class GitLabImporter implements Importer {
         title: issue.title,
         description: `${issue.description}\n\n[View original issue in Gitlab](${issue.web_url})`,
         url: issue.web_url,
-        labels: issue.labels, //TODO: map labels from gitlab labels
+        labels: mapLabels([...issue.labels]), //TODO: map labels from gitlab labels
         createdAt: new Date(issue.created_at),
         dueDate: issue.due_date ? new Date(issue.due_date) : undefined,
-        priority: mapPriority("Low"), //TODO: map priorty from labels
-        status: mapStatusFromLabels(issue.labels),
+        priority: mapPriority([...issue.labels]),
+        status: mapStatusFromLabels([...issue.labels]),
         comments: issue.comments,
+        assigneeId: issue.assignees.length ? mapGitlabIdToEmail(issue.assignees[0].id) : undefined
       });
 
       for (const assignee of issue.assignees) {
@@ -140,7 +146,7 @@ export class GitLabImporter implements Importer {
         };
       }
 
-      for (const label of issue.labels) {
+      for (const label of mapLabels([...issue.labels])) {
         importData.labels[label] = {
           name: label,
         };
@@ -151,14 +157,3 @@ export class GitLabImporter implements Importer {
   };
 }
 
-const mapPriority = (input: LinearPriority): number => {
-  const priorityMap = {
-    "No priority": 0,
-    Urgent: 1,
-    High: 2,
-    Medium: 3,
-    Low: 4,
-  };
-
-  return priorityMap[input] || 0;
-};

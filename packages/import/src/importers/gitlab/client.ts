@@ -111,12 +111,13 @@ export const mapStatusFromLabels = (labels: string[]) => {
   const statuses = {};
   // labels are in order.
   // refinement comes before todo, because if there is anything wrong, we dont' want the issue on status todo.
-  statuses["Status::On hold"] = "Todo"; //TODO: what to do with On Hold? Extra label?
+  statuses["Status::On hold"] = "Backlog"; //TODO: what to do with On Hold? Extra label?
+  statuses["Needs attention"] = "Backlog";
   statuses["Status::Review"] = "Review";
   statuses["Status::Estimate"] = "Estimate";
-  statuses["Status::Refinement"] = "Todo"; // label: Needs attention
+  statuses["Status::Refinement"] = "Backlog"; // label: Needs attention
   statuses["Status::Ready for Release"] = "Done"; // label ready for release?
-  statuses["Status::Approved Internally"] = "Review";
+  statuses["Status::Approved Internally"] = "Done";
   statuses["Status::In progress"] = "In Progress";
   statuses["Status::To-do"] = "Todo";
 
@@ -130,6 +131,74 @@ export const mapStatusFromLabels = (labels: string[]) => {
   return newStatus;
 };
 
-// export const mapLabels = (string:string[]) => {
-//   const labels = {}
-// }
+export const mapPriority = (labels: string[]): number => {
+  const matchedPrioLabel = labels.find(label => label.includes('Prio :: ')) || 0;
+
+  const priorityMap = {};
+  priorityMap["Prio :: Web"] = 0;
+  priorityMap["Prio :: 1"] = 2;
+  priorityMap["Prio :: 2"] = 3;
+  priorityMap["Prio :: 3"] = 4;
+
+  return priorityMap[matchedPrioLabel] || 0;
+};
+
+
+export const mapLabels = (labels:string[]): string[] => {
+
+  const removableLabels = [
+    "Prio :: Web",
+    "Prio :: 1",
+    "Prio :: 2",
+    "Prio :: 3",
+    "Status::On hold",
+    "Status::Review",
+    "Status::Estimate",
+    "Status::Ready for Release",
+    "Status::Approved Internally",
+    "Status::In progress",
+    "Status::To-do",
+    "Env :: Fieldpiece",
+    "Env :: My.Fieldpiece",
+    "Env :: University",
+    "Env :: Brandportal",
+  ]
+
+  for (let i = 0; i < removableLabels.length; i++) {
+    const index = labels.indexOf(removableLabels[i], 0);
+    if (index > -1) {
+      labels.splice(index, 1);
+    }
+  }
+
+  const GitlabLabelsToLinearLabels = {}
+
+  GitlabLabelsToLinearLabels["Type::Bug"] = "Bug";
+  GitlabLabelsToLinearLabels["Type::Epic"] = "Epic";
+  GitlabLabelsToLinearLabels["Type::Feature"] = "Feature";
+  GitlabLabelsToLinearLabels["Type::Optimization"] = "Optimization";
+  GitlabLabelsToLinearLabels["Status::Refinement"] = "Refinement";
+  GitlabLabelsToLinearLabels["Frontend"] = "Front-end";
+  GitlabLabelsToLinearLabels["Backend"] = "Back-end";
+
+  for (let i = 0; i < labels.length; i++) {
+    if (labels[i] in GitlabLabelsToLinearLabels) {
+      labels[i] = GitlabLabelsToLinearLabels[labels[i]];
+    }
+  }
+
+  return labels;
+}
+
+export const mapGitlabIdToEmail = (id:number): string => {
+
+  const users = {}
+  users[2] = "floris@niice.nl";
+  users[20] = "jorn@niice.nl";
+  users[49] = "ken@niice.nl";
+  users[57] = "mik@niice.nl";
+  users[84] = "tim@niice.nl";
+
+
+  return users[id];
+}
